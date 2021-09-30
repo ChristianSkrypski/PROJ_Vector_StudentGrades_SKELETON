@@ -41,6 +41,7 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
 	KP::studentData myStudentData;
 	stringstream ss;
 	fstream my_file;
+	allstudentData.clear();
 	my_file.open(file, ios::in);
 	if(!my_file.is_open()){
 		return KP:: COULD_NOT_OPEN_FILE;
