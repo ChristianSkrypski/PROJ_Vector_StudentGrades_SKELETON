@@ -1,4 +1,3 @@
-//#include <iterator>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -36,21 +35,25 @@ double stringToDouble(const char *myString) {
 	return atof(myString);
 }
 int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, char separator_char) {
+	// Parameters used to read in each line from the file using stringstream and see if the file is open
 	std::string line;
 	std::string token;
 	KP::studentData myStudentData;
 	stringstream ss;
 	fstream my_file;
+	// Clear the vector
 	allstudentData.clear();
+	// Attempt to open the file
 	my_file.open(file, ios::in);
+	// Check if the file is open
 	if(!my_file.is_open()){
 		return KP:: COULD_NOT_OPEN_FILE;
 	}
+	// Get the data from each line in the file, place it in the struct, and add it to the vector
 	while (std::getline(my_file, line)) {
 		ss.clear();
 		ss.str(line);
 		myStudentData.clear();
-		//while (std:: getline(ss, token)){
 		std:: getline(ss, myStudentData.name, ' ');
 		std:: getline(ss, token, ' ');
 		myStudentData.midterm1 = stringToInt(token.c_str());
@@ -60,82 +63,70 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
 			std:: getline(ss, token, ' ');
 			myStudentData.finalgrade = stringToInt(token.c_str());
 		}
-		//}
 		allstudentData.push_back(myStudentData);
 	}
-	//while (!my_file.eof()){
-		//getline(my_file, line);
-		//ss.clear();
-		//ss.str(line);
-		//myStudentData.clear();
-		//getline(ss, myStudentData.name, KP::SEPERATOR_CHAR);
-		//getline(ss, token, KP::SEPERATOR_CHAR);
-		//myStudentData.midterm1 = stringToInt(token.c_str());
-		//getline(ss, token, KP::SEPERATOR_CHAR);
-		//myStudentData.midterm2 = stringToInt(token.c_str());
-		//if (getline(ss, token, KP::SEPERATOR_CHAR)) {
-			//getline(ss, token, KP::SEPERATOR_CHAR);
-			//myStudentData.finalgrade = stringToInt(token.c_str());
-		//}
-		//allstudentData.push_back(myStudentData);
-	//}
-	//int x = allstudentData.size();
 	return KP:: SUCCESS;
 }
 int calculateFinalGrade(std::vector<KP::studentData> &allstudentData) {
+	// Check if the vector is empty
 	if(allstudentData.empty()) {
 			return KP:: VECTOR_CONTAINS_NO_STUDENTS;
 	}
+	// Create a pointer to iterate through the vector
 	std::vector<KP::studentData>::iterator iter = allstudentData.begin();
-	//if (iter == NULL){
-	//	return KP:: VECTOR_CONTAINS_NO_STUDENTS;
-	//}
+	// Calculate the final grade for each student
 	for (iter = allstudentData.begin(); iter != allstudentData.end(); ++iter){
 		(*iter).finalgrade = ((*iter).midterm1+(*iter).midterm2)/2;
 	}
-	//int x = allstudentData.size();
 	return KP:: SUCCESS;
 }
 int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, char separator_char){
+	// Reference to the file
 	fstream my_file;
+	// See if the vector is empty
 	if(allstudentData.empty()) {
 			return KP:: VECTOR_CONTAINS_NO_STUDENTS;
 	}
+	// Create an iterator to iterate through the vector
 	std::vector<KP::studentData>::iterator iter = allstudentData.begin();
+	// Open the file to write to
 	my_file.open(file, ios::out);
+	// See if the file is open
 	if(!my_file.is_open()){
 		return KP:: COULD_NOT_OPEN_FILE;
 	}
-	//if (iter == NULL){
-		//return KP:: VECTOR_CONTAINS_NO_STUDENTS;
-	//}
+	// Write the data from the vector to the file
 	for (iter = allstudentData.begin(); iter != allstudentData.end(); ++iter){
 		std:: string mid1 = DoubleToString((*iter).midterm1);
 		std:: string mid2 = DoubleToString((*iter).midterm2);
 		std:: string final = DoubleToString((*iter).finalgrade);
 		my_file << (*iter).name << " " << mid1 << " " << mid2 << " " << final << "\n";
 	}
+	// Close the file
 	my_file.close();
-	//int x = allstudentData.size();
 	return KP:: SUCCESS;
 }
+// Used to sort the students alphabetically by name
 bool compareName (KP:: studentData& x, KP:: studentData& y) {
 	return x.name < y.name;
 }
+// Used to sort the students from highest to lowest final grade
 bool compareFinal (KP:: studentData& x, KP:: studentData& y){
 	return x.finalgrade > y.finalgrade;
 }
 int sortStudentData(std::vector<KP::studentData> &allstudentData,KP::SORT_TYPE st) {
+	// See if the vector is empty
 	if(allstudentData.empty()) {
 		return KP:: VECTOR_CONTAINS_NO_STUDENTS;
 	}
+	// If the students are sorted by name
 	if (st == KP:: NAME){
 		std:: sort(allstudentData.begin(), allstudentData.end(), compareName);
 	}
+	// If the students are sorted by final grade
 	else if (st == KP:: FINAL_GRADE) {
 		std:: sort(allstudentData.begin(), allstudentData.end(), compareFinal);
 	}
-	//int x = allstudentData.size();
 	return KP:: SUCCESS;
 }
 
